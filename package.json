@@ -1,0 +1,25 @@
+{
+  "name": "study6_typescriptforbeginner",
+  "version": "1.0.0",
+  "description": "learning Typescript by making a Blockchain with it",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "prestart": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ad105geppetto/Study6_TypescriptForBeginner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ad105geppetto/Study6_TypescriptForBeginner/issues"
+  },
+  "homepage": "https://github.com/ad105geppetto/Study6_TypescriptForBeginner#readme",
+  "dependencies": {
+    "typescript": "^4.6.3"
+  }
+}
