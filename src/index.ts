@@ -3,17 +3,19 @@
 import * as CryptoJS from "crypto-js";
 
 class Block {
+    static calculateBlockHash = (index: number, previousHash: string, timestamp: number, data: string): string => {
+        return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
+    }
+
+    static validateStructure = (aBlock: Block): boolean => typeof aBlock.index === "number" && typeof aBlock.hash === "string" && typeof aBlock.previousHash === "string" && typeof aBlock.timestamp === "number" && typeof aBlock.data === "string"
+
     public index: number;
     public hash: string;
     public previousHash: string;
     public data: string;
     public timestamp: number;
 
-    static calculateBlockHash = (index:number, previousHash:string, timestamp:number, data:string): string => {
-        return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
-    }
-
-    constructor(index: number, hash: string, previousHash: string, data: string, timestamp: number){
+    constructor(index: number, hash: string, previousHash: string, data: string, timestamp: number) {
         this.hash = hash;
         this.index = index;
         this.previousHash = previousHash;
@@ -22,7 +24,7 @@ class Block {
     }
 }
 
-const genesisBlock:Block = new Block(0, "20202020202", "", "Hello", 123456);
+const genesisBlock: Block = new Block(0, "20202020202", "", "Hello", 123456);
 
 let blockchain: Block[] = [genesisBlock]
 
@@ -30,11 +32,11 @@ const getBlockchain = (): Block[] => {
     return blockchain
 }
 
-const getLatestBlock = () : Block => {
+const getLatestBlock = (): Block => {
     return blockchain[blockchain.length - 1]
 }
 
-const getNewTimeStamp = () : number => {
+const getNewTimeStamp = (): number => {
     return Math.round(new Date().getTime() / 1000)
 }
 
@@ -50,8 +52,18 @@ const createNewBlock = (data: string): Block => {
     );
 
     const newBlock: Block = new Block(newIndex, newHash, previousBlock.hash, data, newTimeStamp);
+
+    const isBlockValid = (candidateBlcok: Block, previousBlock: Block): boolean => {
+        if (!Block.validateStructure(candidateBlcok)) {
+            return false;
+        } else if (previousBlock.index + 1 !== candidateBlcok.index) {
+            return false;
+        } else if (previousBlock.hash !== candidateBlcok.hash) {
+            return false;
+        }
+    }
     return newBlock;
 }
 
 console.log(createNewBlock("hello"), createNewBlock("bye bye"))
-export {};
+export { };
