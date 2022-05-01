@@ -3,11 +3,20 @@
 import * as CryptoJS from "crypto-js";
 
 class Block {
-    static calculateBlockHash = (index: number, previousHash: string, timestamp: number, data: string): string => {
-        return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
-    }
+    static calculateBlockHash = (
+        index: number,
+        previousHash: string,
+        timestamp: number,
+        data: string
+    ): string =>
+        CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
 
-    static validateStructure = (aBlock: Block): boolean => typeof aBlock.index === "number" && typeof aBlock.hash === "string" && typeof aBlock.previousHash === "string" && typeof aBlock.timestamp === "number" && typeof aBlock.data === "string"
+    static validateStructure = (aBlock: Block): boolean =>
+        typeof aBlock.index === "number" &&
+        typeof aBlock.hash === "string" &&
+        typeof aBlock.previousHash === "string" &&
+        typeof aBlock.timestamp === "number" &&
+        typeof aBlock.data === "string"
 
     public index: number;
     public hash: string;
@@ -15,7 +24,13 @@ class Block {
     public data: string;
     public timestamp: number;
 
-    constructor(index: number, hash: string, previousHash: string, data: string, timestamp: number) {
+    constructor(
+        index: number,
+        hash: string,
+        previousHash: string,
+        data: string,
+        timestamp: number
+    ) {
         this.hash = hash;
         this.index = index;
         this.previousHash = previousHash;
@@ -28,17 +43,11 @@ const genesisBlock: Block = new Block(0, "20202020202", "", "Hello", 123456);
 
 let blockchain: Block[] = [genesisBlock]
 
-const getBlockchain = (): Block[] => {
-    return blockchain
-}
+const getBlockchain = (): Block[] => blockchain
 
-const getLatestBlock = (): Block => {
-    return blockchain[blockchain.length - 1]
-}
+const getLatestBlock = (): Block => blockchain[blockchain.length - 1]
 
-const getNewTimeStamp = (): number => {
-    return Math.round(new Date().getTime() / 1000)
-}
+const getNewTimeStamp = (): number => Math.round(new Date().getTime() / 1000)
 
 const createNewBlock = (data: string): Block => {
     const previousBlock: Block = getLatestBlock();
@@ -50,20 +59,49 @@ const createNewBlock = (data: string): Block => {
         newTimeStamp,
         data
     );
+    const newBlock: Block = new Block(
+        newIndex,
+        newHash,
+        previousBlock.hash,
+        data,
+        newTimeStamp
+    );
 
-    const newBlock: Block = new Block(newIndex, newHash, previousBlock.hash, data, newTimeStamp);
-
-    const isBlockValid = (candidateBlcok: Block, previousBlock: Block): boolean => {
-        if (!Block.validateStructure(candidateBlcok)) {
-            return false;
-        } else if (previousBlock.index + 1 !== candidateBlcok.index) {
-            return false;
-        } else if (previousBlock.hash !== candidateBlcok.hash) {
-            return false;
-        }
-    }
+    addBlock(newBlock);
     return newBlock;
 }
 
-console.log(createNewBlock("hello"), createNewBlock("bye bye"))
+const getHashforBlock = (aBlock: Block): string =>
+    Block.calculateBlockHash(
+        aBlock.index,
+        aBlock.previousHash,
+        aBlock.timestamp,
+        aBlock.data
+    )
+
+const isBlockValid = (candidateBlcok: Block, previousBlock: Block): boolean => {
+    if (!Block.validateStructure(candidateBlcok)) {
+        return false;
+    } else if (previousBlock.index + 1 !== candidateBlcok.index) {
+        return false;
+    } else if (previousBlock.hash !== candidateBlcok.previousHash) {
+        return false;
+    } else if (getHashforBlock(candidateBlcok) !== candidateBlcok.hash) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+const addBlock = (candidateBlock: Block): void => {
+    if (isBlockValid(candidateBlock, getLatestBlock())) {
+        blockchain.push(candidateBlock)
+    }
+}
+
+createNewBlock("second Blcok")
+createNewBlock("third Blcok")
+createNewBlock("fourth Blcok")
+
+console.log(blockchain)
 export { };
